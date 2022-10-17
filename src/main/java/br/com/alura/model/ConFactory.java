@@ -4,23 +4,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class conBanco implements AutoCloseable{
+public class ConFactory {
 
 	private Connection con;
-	private infoBanco infoDb = new infoBanco();
+	private InfoBanco infoDb = new InfoBanco();
 	
-	public conBanco() throws SQLException {
+	public ConFactory() throws SQLException {
 		this.con = DriverManager
 				.getConnection(infoDb.getUrlBanco(), infoDb.getUsuario(), infoDb.getSenha());
 	}
 	
-	@Override
-	public void close() throws Exception {
-		con.close();
-		System.out.println("Conexão Fechada...");
-	}
-	
-	public Connection getCon() {
+	public Connection getCon() throws SQLException{
 		return con;
 	}
 }

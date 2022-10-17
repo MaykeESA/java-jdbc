@@ -1,12 +1,12 @@
 package br.com.alura.model;
 
-public class infoBanco {
+public class InfoBanco {
 
 	private String urlBanco;
 	private String usuario;
 	private String senha;
 
-	public infoBanco() {
+	public InfoBanco() {
 		this.urlBanco = "jdbc:mysql://localhost:3306/LojaVirtual";
 		this.usuario = "root";
 		this.senha = "root";
