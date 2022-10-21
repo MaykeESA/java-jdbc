@@ -1,25 +1,26 @@
-package br.com.alura.jdbc;
+package br.com.alura.jdbc.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import br.com.alura.model.Produto;
 
-public class Querys implements AutoCloseable {
+import br.com.alura.jdbc.model.Produto;
+
+public class ProdutoDAO implements AutoCloseable {
 
 	protected ConFactory factory;
 	protected Connection con;
 
-	public Querys() throws SQLException {
+	public ProdutoDAO() throws SQLException {
 		this.factory = new ConFactory();
 		this.con = this.factory.getCon();
 		this.con.setAutoCommit(false);
 	}
 
 	// Selects
-	public void bdSelectAll() throws SQLException {
+	public void buscar() throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement("SELECT * FROM lojavirtual.produto;")) {
 			pstm.execute();
 
@@ -41,7 +42,7 @@ public class Querys implements AutoCloseable {
 		}
 	}
 
-	public void bdSelectDescricao() throws SQLException {
+	public void buscarDesc() throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement("SELECT descricao FROM lojavirtual.produto;")) {
 			pstm.execute();
 
@@ -62,20 +63,22 @@ public class Querys implements AutoCloseable {
 	}
 
 	// Insert
-	public void bdInsertProduto(Produto produto, String nome, String descricao) throws SQLException {
+	public void salvar(Produto produto) throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement(
 				"INSERT INTO lojavirtual.produto(nome, descricao) " + "VALUES ( ? , ?)",
 				Statement.RETURN_GENERATED_KEYS);) {
 
-			pstm.setString(1, nome);
-			pstm.setString(2, descricao);
+			pstm.setString(1, produto.getNome());
+			pstm.setString(2, produto.getDescricao());
 			pstm.execute();
 
 			try (ResultSet rst = pstm.getGeneratedKeys()) {
 				while (rst.next()) {
 					Integer id = rst.getInt(1);
 					produto.setId(id);
-					System.out.println("O ID " + id + " foi registrado com SUCESSO no banco de dados.");
+					System.out.println("O ID " + id + " foi registrado com SUCESSO no banco de dados.\n"
+									 + "Nome: " + produto.getNome() + "\n"
+									 + "Descricão: " + produto.getDescricao());
 				}
 				this.con.commit();
 			}
@@ -89,7 +92,7 @@ public class Querys implements AutoCloseable {
 	}
 
 	// Delete
-	public void bdDeleteProduto(int id) throws SQLException {
+	public void deletar(int id) throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement("DELETE FROM lojavirtual.produto WHERE id = " + id);) {
 			pstm.execute();
 
