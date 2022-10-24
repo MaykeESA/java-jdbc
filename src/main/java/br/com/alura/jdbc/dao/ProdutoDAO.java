@@ -5,17 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import br.com.alura.jdbc.factory.ConFactory;
 import br.com.alura.jdbc.model.Produto;
 
-public class ProdutoDAO implements AutoCloseable {
+public class ProdutoDAO {
 
 	protected ConFactory factory;
 	protected Connection con;
 
-	public ProdutoDAO() throws SQLException {
-		this.factory = new ConFactory();
-		this.con = this.factory.getCon();
+	public ProdutoDAO(Connection con) throws SQLException {
+		this.con = con;
 		this.con.setAutoCommit(false);
 	}
 
@@ -29,8 +28,12 @@ public class ProdutoDAO implements AutoCloseable {
 					Integer id = rst.getInt("id");
 					String nome = rst.getString("nome");
 					String descricao = rst.getString("descricao");
+					Integer categoria = rst.getInt("categoria_id");
 
-					System.out.println("Id: " + id + "\n" + "Nome: " + nome + "\n" + "Desc: " + descricao + "\n");
+					System.out.println("Id: " + id + "\n" + 
+									   "Nome: " + nome + "\n" + 
+									   "Desc: " + descricao + "\n" +
+									   "Categoria: " + categoria + "\n");
 				}
 				this.con.commit();
 			}
@@ -42,14 +45,20 @@ public class ProdutoDAO implements AutoCloseable {
 		}
 	}
 
-	public void buscarDesc() throws SQLException {
-		try (PreparedStatement pstm = this.con.prepareStatement("SELECT descricao FROM lojavirtual.produto;")) {
+	public void buscarComCategoria() throws SQLException {
+		try (PreparedStatement pstm = this.con.prepareStatement(
+				"SELECT lojavirtual.categoria.nome, lojavirtual.produto.nome, descricao FROM lojavirtual.produto "
+						+ "JOIN lojavirtual.categoria ON lojavirtual.categoria.id = categoria_id;")) {
 			pstm.execute();
 
 			try (ResultSet rst = pstm.getResultSet()) {
 				while (rst.next()) {
-					String descricao = rst.getString("descricao");
-					System.out.println("Descrição produto: " + descricao);
+					String categoria = rst.getString(1);
+					String tipo = rst.getString(2);
+					String nome = rst.getString(3);
+					System.out.println("Categoria: " + categoria + "\n"
+									   + "Produto: " + tipo + "\n"
+									   + "Nome: " + nome + "\n");
 				}
 				this.con.commit();
 			}
@@ -61,7 +70,7 @@ public class ProdutoDAO implements AutoCloseable {
 		}
 
 	}
-
+	
 	// Insert
 	public void salvar(Produto produto) throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement(
@@ -108,13 +117,4 @@ public class ProdutoDAO implements AutoCloseable {
 		}
 	}
 
-	@Override
-	public void close() throws Exception {
-		this.con.close();
-		System.out.println("\nConexão Fechada...");
-	}
-
-	public Connection getCon() {
-		return this.con;
-	}
 }

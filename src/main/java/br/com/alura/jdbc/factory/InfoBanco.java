@@ -1,4 +1,4 @@
-package br.com.alura.jdbc.dao;
+package br.com.alura.jdbc.factory;
 
 public class InfoBanco {
 
