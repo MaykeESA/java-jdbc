@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import br.com.alura.jdbc.controller.CategoriaController;
 import br.com.alura.jdbc.factory.ConFactory;
 import br.com.alura.jdbc.model.Categoria;
 
@@ -22,13 +23,19 @@ public class CategoriaDAO {
 	public void buscar() throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement("SELECT * FROM lojavirtual.categoria;")) {
 			pstm.execute();
-
+			
+			CategoriaController.clearArray();
+			
 			try (ResultSet rst = pstm.getResultSet()) {
 				while (rst.next()) {
 					Integer id = rst.getInt("id");
 					String nome = rst.getString("nome");
 
 					System.out.println("Id: " + id + "\n" + "Nome: " + nome + "\n");
+					
+					Categoria categoriaArray = new Categoria(nome);
+					categoriaArray.setId(id);
+					CategoriaController.addArray(categoriaArray);
 				}
 				this.con.commit();
 			}
@@ -55,6 +62,8 @@ public class CategoriaDAO {
 					categoria.setId(id);
 					System.out.println("O ID " + id + " foi registrado com SUCESSO no banco de dados.\n"
 									 + "Nome: " + categoria.getNome() + "\n");
+					
+					CategoriaController.addArray(categoria);
 				}
 				this.con.commit();
 			}
