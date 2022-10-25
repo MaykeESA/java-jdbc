@@ -5,12 +5,12 @@ public class Produto {
 	private Integer id;
 	private String nome;
 	private String descricao;
-	
+
 	public Produto(String nome, String descricao) {
 		this.nome = nome;
 		this.descricao = descricao;
 	}
-	
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -22,10 +22,10 @@ public class Produto {
 	public String getDescricao() {
 		return descricao;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Id: " + this.id + "\nNome: " + this.getNome() + "\nDescricao: " + this.getDescricao() + "\n";
 	}
-	
+
 }

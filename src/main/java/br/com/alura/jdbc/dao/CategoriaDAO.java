@@ -13,26 +13,26 @@ public class CategoriaDAO {
 
 	protected ConFactory factory;
 	protected Connection con;
-	
+
 	public CategoriaDAO(Connection con) throws SQLException {
 		this.con = con;
 		this.con.setAutoCommit(false);
 	}
-	
+
 	// Selects
 	public void buscar() throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement("SELECT * FROM lojavirtual.categoria;")) {
 			pstm.execute();
-			
+
 			CategoriaController.clearArray();
-			
+
 			try (ResultSet rst = pstm.getResultSet()) {
 				while (rst.next()) {
 					Integer id = rst.getInt("id");
 					String nome = rst.getString("nome");
 
 					System.out.println("Id: " + id + "\n" + "Nome: " + nome + "\n");
-					
+
 					Categoria categoriaArray = new Categoria(nome);
 					categoriaArray.setId(id);
 					CategoriaController.addArray(categoriaArray);
@@ -46,12 +46,11 @@ public class CategoriaDAO {
 			System.out.println("Rollback da aplicação!");
 		}
 	}
-	
+
 	// Insert
 	public void salvar(Categoria categoria) throws SQLException {
 		try (PreparedStatement pstm = this.con.prepareStatement(
-				"INSERT INTO lojavirtual.categoria(nome) " + "VALUES ( ? )",
-				Statement.RETURN_GENERATED_KEYS);) {
+				"INSERT INTO lojavirtual.categoria(nome) " + "VALUES ( ? )", Statement.RETURN_GENERATED_KEYS);) {
 
 			pstm.setString(1, categoria.getNome());
 			pstm.execute();
@@ -60,9 +59,9 @@ public class CategoriaDAO {
 				while (rst.next()) {
 					Integer id = rst.getInt(1);
 					categoria.setId(id);
-					System.out.println("O ID " + id + " foi registrado com SUCESSO no banco de dados.\n"
-									 + "Nome: " + categoria.getNome() + "\n");
-					
+					System.out.println("O ID " + id + " foi registrado com SUCESSO no banco de dados.\n" + "Nome: "
+							+ categoria.getNome() + "\n");
+
 					CategoriaController.addArray(categoria);
 				}
 				this.con.commit();
@@ -78,7 +77,8 @@ public class CategoriaDAO {
 
 	// Delete
 	public void deletar(int id) throws SQLException {
-		try (PreparedStatement pstm = this.con.prepareStatement("DELETE FROM lojavirtual.categoria WHERE id = " + id);) {
+		try (PreparedStatement pstm = this.con
+				.prepareStatement("DELETE FROM lojavirtual.categoria WHERE id = " + id);) {
 			pstm.execute();
 
 			int linhasMod = pstm.getUpdateCount();
